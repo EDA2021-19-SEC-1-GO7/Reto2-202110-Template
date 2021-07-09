@@ -47,8 +47,8 @@ def initialize():
         "categorias":None
     }
     Data["videos"]=lt.newList("ARRAY_LIST")#Todos los videos
-    Data["categorias_id"]=mp.newMap(44,47,'CHAINING',4,None)#Parejas id_categoria-Nombre categoria
-    Data["categorias"]=mp.newMap(44,47,'CHAINING',4,None)#Videos ordenados por categoria
+    Data["categorias_id"]=mp.newMap(44,47,'CHAINING',2,None)#Parejas id_categoria-Nombre categoria
+    Data["categorias"]=mp.newMap(44,47,'CHAINING',2,None)#Videos ordenados por categoria
     
     return Data
 # Funciones para agregar informacion al catalogo

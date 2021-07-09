@@ -53,8 +53,8 @@ Data = None
 def initialize()->dict:
     return ctrl.initialize()
 
-def Load_Data(storage:dict)->None:
-    ctrl.Load_Data(storage)
+def Load_Data(storage:dict):
+    return ctrl.Load_Data(storage)
 
 """
 Menu principal
@@ -65,7 +65,7 @@ while True:
     if int(inputs[0]) == 1:
         Datos=initialize()      
         print("Cargando información de los archivos ....")
-        Load_Data(Datos)
+        answer=Load_Data(Datos)
         print("Numero de videos cargados: "+str(lt.size(Datos["videos"])))
         first=lt.firstElement(Datos["videos"])
         print("Datos del primer video cargado:\n"+
@@ -77,13 +77,14 @@ while True:
             "Likes: "+str(first["likes"])+"\n"+
             "Dislikes: "+str(first["dislikes"])
         )
-        print("Categorias: \n"+"id "+" nombre")
-        cat_keys=mp.keySet(Datos["categorias_id"])
-        for i in lt.iterator(cat_keys):
-            id=i
-            name=mp.get(Datos["categorias_id"],id)
-            name=me.getValue(name)
-            print(id+" "+name)
+        # print("Categorias: \n"+"id "+" nombre")
+        # cat_keys=mp.keySet(Datos["categorias_id"])
+        # for i in lt.iterator(cat_keys):
+        #     id=i
+        #     name=mp.get(Datos["categorias_id"],id)
+        #     name=me.getValue(name)
+        #     print(id+" "+name)
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ","Memoria [kB]: ", f"{answer[1]:.3f}")
     elif int(inputs[0]) == 2:
         pais=input("Pais: ")
         categoria=input("Categoria: ")
