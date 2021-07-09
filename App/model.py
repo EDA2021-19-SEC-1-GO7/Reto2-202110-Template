@@ -81,7 +81,7 @@ def filtrar_cat_n(categories, categoria_name,n)->list:
     list_new=lt.newList()
     titulos=lt.newList()
     i=1
-    while lt.size(list_new)<=n and i<=lt.size(vids_sorted):
+    while lt.size(list_new)<n and i<=lt.size(vids_sorted):
         tit=lt.getElement(vids_sorted,i)["title"]
         if lt.isPresent(titulos,tit):
             pass
