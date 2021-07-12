@@ -61,7 +61,7 @@ def Load_Data(storage:dict):
 
 
 def Load_videos(storage:dict):
-    videos_File = cf.data_dir + 'videos-large.csv'
+    videos_File = cf.data_dir + 'videos-small.csv'
     input_file = csv.DictReader(open(videos_File, encoding='utf-8'))
     for video in input_file:
         model.add_video(storage, video)
@@ -115,5 +115,5 @@ def filtrar_count_tag(videos, pais, tag, n)->list:
 def max_vids_count(vids:list,pais:str):
     return model.max_vids_count(vids,pais)
 
-def max_vids_cat(videos:list, categories:list, categoria:str):
-    return model.max_vids_cat(videos, categories, categoria)
+def max_vids_cat(videos:list):
+    return model.max_vids_cat(videos)

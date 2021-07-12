@@ -44,18 +44,21 @@ def initialize(type, lf):
     Data={
         "videos":None,
         "categorias_id":None,
-        "categorias":None
+        "categorias":None,
+        "Paises":None
     }
     Data["videos"]=lt.newList("ARRAY_LIST")#Todos los videos
     Data["categorias_id"]=mp.newMap(numelements=100, maptype=type, loadfactor=lf)#Parejas id_categoria-Nombre categoria
     Data["categorias"]=mp.newMap(numelements=100, maptype=type, loadfactor=lf)#Videos ordenados por categoria
-    
+    Data["Paises"]=mp.newMap(numelements=200, maptype=type, loadfactor=1)#Mapa con listas de videos por pais.
+
     return Data
 # Funciones para agregar informacion al catalogo
 
 def add_video(Data, video):
     lt.addLast(Data["videos"],video)
     add_categoria_vid(video,Data)
+    add_pais(video["country"],video,Data)
 
 def add_categoria_id(Data, categoria):
     mp.put(Data["categorias_id"],categoria["id"],categoria["name"])
@@ -65,6 +68,16 @@ def add_categoria_id(Data, categoria):
 def new_categoria(name,id):
     cat={"name":name,"id":id,'videos':lt.newList(datastructure='ARRAY_LIST')}
     return cat
+
+def add_pais(pais,video,Data):
+    countries_in_record=mp.keySet(Data["Paises"])
+    if pais not in lt.iterator(countries_in_record):
+        lista=lt.newList()
+        lt.addLast(lista,video)
+        mp.put(Data["Paises"],pais,lista)
+    else:
+        lista=me.getValue(mp.get(Data["Paises"],pais))
+        lt.addLast(lista,video)
 
 def add_categoria_vid(video,Data):
     nombre_cat=me.getValue(mp.get(Data["categorias_id"],video["category_id"]))
@@ -131,17 +144,20 @@ def filtrar_count_tag(videos, pais, tag, n)->list:
     return videos_count_tag
 
 
-def max_vids_count(videos:list,pais:str)->dict:
+def max_vids_count(paises:list,pais:str)->dict:
     """ Retorna una tupla que contiene 
             El título del video que fue tendencia por más días en un país específico
             El ratio de likes/dislikes para el video que fue tendencia por más días en un país específico
             El canal del video que fue tendencia por más días en un país específico
             El numero de días que el video fue tendencia
             El país en donde el video fue tendencia"""
+    videos=me.getValue(mp.get(paises,pais))
+    print("hola")
+    #print(videos)
     registro={}#Diccionario de listas vacio, tendra como llave los titulos de los videos; en las listas se anotaran los valores solicitados por el usuario.
     for i in lt.iterator(videos):#Recorrer cada video de la lista principal.
         titulo=i["title"]
-        if titulo in registro.keys() and i["country"]==pais: #Si el video ya ha aparecido para el pais requerido, entonces se suma uno al contador y se comparan los likes.
+        if titulo in registro.keys(): #Si el video ya ha aparecido para el pais requerido, entonces se suma uno al contador y se comparan los likes.
             lista=registro[titulo]#[numero de apariciones, likes maximos, dislikes maximos,titulo del canal]
             record=lt.getElement(lista,1)
             lt.changeInfo(lista,1,record+1)#Suma 1 al contador
@@ -150,7 +166,7 @@ def max_vids_count(videos:list,pais:str)->dict:
             if likes_i>lt.getElement(lista,2):#Asumimos que la relacion likes/dislikes es la de la ultima fecha, y que en esta ultima fecha hay más likes que en las otras posibles.
                 lt.changeInfo(lista,2,likes_i)
                 lt.changeInfo(lista,3,dislikes_i)
-        elif titulo not in registro.keys() and i["country"]==pais:#Si el video no esta registrado ya, entonces se añade su entrada y se inicializa con sus valores.
+        elif titulo not in registro.keys():#Si el video no esta registrado ya, entonces se añade su entrada y se inicializa con sus valores.
             registro[titulo]=lt.newList()
             lt.addLast(registro[titulo],1)
             lt.addLast(registro[titulo],int(i["likes"]))
@@ -159,6 +175,7 @@ def max_vids_count(videos:list,pais:str)->dict:
         else:
             pass #Caso en el que el video no corresponde al pais
     #Para este punto nuestro diccionario tiene que tener todos los videos unicos de la lista para el pais seleccionado, y con los likes/dislikes más actuales.         
+    print(registro.keys())
     respuesta=None
     ratio=None
     for j in registro.keys():#Se recorre cada video unico.
@@ -168,7 +185,6 @@ def max_vids_count(videos:list,pais:str)->dict:
         if dislikes!=0 and likes/dislikes<10:
             pass
         elif respuesta!=None and (apariciones_j>lt.getElement(registro[respuesta],1)) and j!="Deleted video":
-            respuesta=j
             if dislikes>0:
                 ratio=likes/dislikes
             else:
@@ -182,7 +198,7 @@ def max_vids_count(videos:list,pais:str)->dict:
     return respuesta, ratio, lt.getElement(registro[respuesta],4), lt.getElement(registro[respuesta],1), pais
 
 
-def max_vids_cat(videos:list, categories:list, categoria:str)->dict:
+def max_vids_cat(videos_dict:list)->dict:
     """ Retorna una tupla que contiene 
             El título del video que fue tendencia por más días de una categoría específica
             El ratio de likes/dislikes para el video que fue tendencia por más días de una categoría específica
@@ -191,10 +207,10 @@ def max_vids_cat(videos:list, categories:list, categoria:str)->dict:
             La categoría del video fue tendencia por más días"""
 
     registro={} #Diccionario de listas vacio, tendra como llave los titulos de los videos; en las listas se anotaran los valores solicitados por el usuario.
-    videos_cat=me.getValue(mp.get(categories,categoria))["videos"]
     i=1
-    while i<=lt.size(videos_cat):
-        titulo=lt.getElement(videos_cat,i)["title"]
+    videos=videos_dict["videos"]
+    for i in lt.iterator(videos):
+        titulo=i["title"]
         if titulo not in registro.keys():#Si el video no esta registrado ya, entonces se añade su entrada y se inicializa con sus valores.
             registro[titulo]=lt.newList()
             lt.addLast(registro[titulo],1)
@@ -211,7 +227,6 @@ def max_vids_cat(videos:list, categories:list, categoria:str)->dict:
             if likes_i>lt.getElement(lista,2):#Asumimos que la relacion likes/dislikes es la de la ultima fecha, y que en esta ultima fecha hay más likes que en las otras posibles.
                 lt.changeInfo(lista,2,likes_i)
                 lt.changeInfo(lista,3,dislikes_i)
-        
     #Para este punto nuestro diccionario tiene que tener todos los videos unicos de la lista para la categoria seleccionada, y con los likes/dislikes más actuales.         
     respuesta=None
     ratio=None
@@ -233,7 +248,7 @@ def max_vids_cat(videos:list, categories:list, categoria:str)->dict:
                 ratio=likes/dislikes
             else:
                 ratio=likes
-    return respuesta, ratio, lt.getElement(registro[respuesta], 4), lt.getElement(registro[respuesta],1), categoria
+    return respuesta, str(ratio), str(lt.getElement(registro[respuesta], 4)), str(lt.getElement(registro[respuesta],1))
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 
