@@ -61,7 +61,7 @@ def Load_Data(storage:dict):
 
 
 def Load_videos(storage:dict):
-    videos_File = cf.data_dir + 'videos-small.csv'
+    videos_File = cf.data_dir + 'videos-large.csv'
     input_file = csv.DictReader(open(videos_File, encoding='utf-8'))
     for video in input_file:
         model.add_video(storage, video)
@@ -113,7 +113,44 @@ def filtrar_count_tag(videos, pais, tag, n)->list:
     return model.filtrar_count_tag(videos, pais, tag, n)
 
 def max_vids_count(vids:list,pais:str):
-    return model.max_vids_count(vids,pais)
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    ret=model.max_vids_count(vids,pais)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    print("Tiempo [ms]: ", f"{delta_time:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{delta_memory:.3f}")
+    
+    return ret
 
 def max_vids_cat(videos:list):
-    return model.max_vids_cat(videos)
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    ret=model.max_vids_cat(videos)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    print("Tiempo [ms]: ", f"{delta_time:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{delta_memory:.3f}")
+    
+    return ret
+    
