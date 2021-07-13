@@ -57,7 +57,7 @@ def initialize(type, fc)->dict:
     return ctrl.initialize(type, fc)
 
 def Load_Data(storage:dict):
-    ctrl.Load_Data(storage)
+    return ctrl.Load_Data(storage)
 
 """
 Menu principal
@@ -74,9 +74,9 @@ while True:
         if int(Inputs[0]) == 2:
             Datos=initialize("CHAINING", float(fc))   
         print("Cargando información de los archivos ....")
-        Load_Data(Datos)
-        print("Numero de videos cargados: "+str(lt.size(Datos["videos"])))
-        first=lt.firstElement(Datos["videos"])
+        Re=Load_Data(Datos)
+        print("Numero de videos cargados: "+str(Re[2]))
+        #first=lt.firstElement(Datos["videos"])
         """print("Datos del primer video cargado:\n"+
             "Titulo: "+str(first["title"])+"\n"+
             "Canal: "+str(first["channel_title"])+"\n"+
@@ -93,7 +93,6 @@ while True:
             name=mp.get(Datos["categorias_id"],id)
             name=me.getValue(name)
             print(id+" "+name)"""
-        print(mp.keySet(Datos["Paises"]))
 
     elif int(inputs[0]) == 2:
         pais=input("Pais: ")
@@ -142,7 +141,7 @@ while True:
     elif int(inputs[0]) == 6:
         categoria=input("Categoria: ")
         n = input("Número de videos a listar: ")
-        while int(n)>lt.size(Datos["videos"]):
+        while int(n)>Re[2]:
             print("El número de videos a listar excede la cantidad de videos cargados en la memoria")
             n = input("Número de videos a listar: ")
         lista=ctrl.filtrar_cat_n(Datos["categorias"]," "+categoria,int(n)) #El " " es porque cuando se leen las categorias, vienen con un espacio al inicio.

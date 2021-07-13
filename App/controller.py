@@ -26,7 +26,7 @@ import model
 import csv
 import time
 import tracemalloc
-
+from DISClib.ADT import list as lt
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -47,7 +47,7 @@ def Load_Data(storage:dict):
     start_memory = getMemory()
 
     Load_cetegories(storage)
-    Load_videos(storage)
+    n=Load_videos(storage)
 
     stop_memory = getMemory()
     stop_time = getTime()
@@ -57,14 +57,17 @@ def Load_Data(storage:dict):
     delta_memory = deltaMemory(start_memory, stop_memory)
     print("Tiempo [ms]: ", f"{delta_time:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{delta_memory:.3f}")
-    return delta_time, delta_memory
+    return delta_time, delta_memory,n
 
 
 def Load_videos(storage:dict):
+    n=0
     videos_File = cf.data_dir + 'videos-large.csv'
     input_file = csv.DictReader(open(videos_File, encoding='utf-8'))
     for video in input_file:
         model.add_video(storage, video)
+        n+=1    
+    return n
 
 def Load_cetegories(storage:dict):
     cat_File = cf.data_dir + 'category-id.csv'

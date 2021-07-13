@@ -42,12 +42,10 @@ los mismos.
 # Construccion de modelos
 def initialize(type, lf):
     Data={
-        "videos":None,
         "categorias_id":None,
         "categorias":None,
         "Paises":None
     }
-    Data["videos"]=lt.newList("ARRAY_LIST")#Todos los videos
     Data["categorias_id"]=mp.newMap(numelements=100, maptype=type, loadfactor=lf)#Parejas id_categoria-Nombre categoria
     Data["categorias"]=mp.newMap(numelements=100, maptype=type, loadfactor=lf)#Videos ordenados por categoria
     Data["Paises"]=mp.newMap(numelements=200, maptype=type, loadfactor=1)#Mapa con listas de videos por pais.
@@ -56,7 +54,6 @@ def initialize(type, lf):
 # Funciones para agregar informacion al catalogo
 
 def add_video(Data, video):
-    lt.addLast(Data["videos"],video)
     add_categoria_vid(video,Data)
     add_pais(video["country"],video,Data)
 
@@ -152,7 +149,6 @@ def max_vids_count(paises:list,pais:str)->dict:
             El numero de días que el video fue tendencia
             El país en donde el video fue tendencia"""
     videos=me.getValue(mp.get(paises,pais))
-    print("hola")
     #print(videos)
     registro={}#Diccionario de listas vacio, tendra como llave los titulos de los videos; en las listas se anotaran los valores solicitados por el usuario.
     for i in lt.iterator(videos):#Recorrer cada video de la lista principal.
@@ -175,7 +171,6 @@ def max_vids_count(paises:list,pais:str)->dict:
         else:
             pass #Caso en el que el video no corresponde al pais
     #Para este punto nuestro diccionario tiene que tener todos los videos unicos de la lista para el pais seleccionado, y con los likes/dislikes más actuales.         
-    print(registro.keys())
     respuesta=None
     ratio=None
     for j in registro.keys():#Se recorre cada video unico.
