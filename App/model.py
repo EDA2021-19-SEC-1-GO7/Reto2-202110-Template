@@ -128,13 +128,10 @@ def filtrar_count_tag(paises, pais, tag, n)->list:
     incluyan la palabra ingresada por el usuario como subcadena """
     videos_country= me.getValue(mp.get(paises, pais))
     videos=lt.newList('ARRAY_LIST')
-    titulos=lt.newList('ARRAY_LIST')
     i=1
     while i<=lt.size(videos_country):
-        tit=lt.getElement(videos_country,i)["title"]
         tags=lt.getElement(videos_country, i)["tags"]
-        if lt.isPresent(titulos,tit)==0 and (tag.lower() in tags.lower()):
-            lt.addLast(titulos,tit)
+        if (tag.lower() in tags.lower()):
             lt.addLast(videos,lt.getElement(videos_country,i))
         i+=1
     vids_sorted=sort_vids_by_likes(videos)
@@ -183,6 +180,7 @@ def max_vids_count(paises:list,pais:str)->dict:
         if dislikes!=0 and likes/dislikes<10:
             pass
         elif respuesta!=None and (apariciones_j>lt.getElement(registro[respuesta],1)) and j!="Deleted video":
+            respuesta=j
             if dislikes>0:
                 ratio=likes/dislikes
             else:
