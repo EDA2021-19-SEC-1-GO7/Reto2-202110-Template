@@ -33,8 +33,8 @@ El controlador se encarga de mediar entre la vista y el modelo.
 """
 
 # Inicialización del Catálogo de libros
-def initialize(type, lf):
-    Datos=model.initialize(type, lf)
+def initialize():
+    Datos=model.initialize()
     return Datos 
 
 # Funciones para la carga de datos
@@ -106,14 +106,67 @@ def deltaMemory(start_memory, stop_memory):
     return delta_memory
 
 # Funciones de consulta sobre el catálogo
+
 def filtrar_count_cat(categories, categoria, pais, n)->list:
-    return model.filtrar_count_cat(categories, categoria, pais, n)
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    lista=model.filtrar_count_cat(categories, categoria, pais, n)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    print("Tiempo [ms]: ", f"{delta_time:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{delta_memory:.3f}")
+
+    return lista 
 
 def filtrar_cat_n(categories, categoria ,n)->list:
-    return model.filtrar_cat_n(categories, categoria,n)
+    delta_time = -1.0
+    delta_memory = -1.0
 
-def filtrar_count_tag(videos, pais, tag, n)->list:
-    return model.filtrar_count_tag(videos, pais, tag, n)
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    lista = model.filtrar_cat_n(categories, categoria,n)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    print("Tiempo [ms]: ", f"{delta_time:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{delta_memory:.3f}")
+    return lista
+
+def filtrar_count_tag(paises, pais, tag, n)->list:
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
+    lista=model.filtrar_count_tag(paises, pais, tag, n)
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+    print("Tiempo [ms]: ", f"{delta_time:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{delta_memory:.3f}")
+    return lista
 
 def max_vids_count(vids:list,pais:str):
     delta_time = -1.0

@@ -46,15 +46,13 @@ def printMenu():
     print("3- Video que ha sido trending por más días en un pais especifico con una percepción altamente positiva.")
     print("4- Video que ha sido trending por más días de categoria especifica con una percepción sumamente positiva.")
     print("5- Mostrar n videos con más comentarios, en un pais y con tag especifico.")
-    print("6- n videos con más likes para una categoria especifica.")
+    print("6- Mostrar n videos con más likes para una categoria especifica.")
 
-def printType():
-    print("1- Linear Probing")
-    print("2- Separate Chaining")
+
 Data = None
 
-def initialize(type, fc)->dict:
-    return ctrl.initialize(type, fc)
+def initialize()->dict:
+    return ctrl.initialize()
 
 def Load_Data(storage:dict):
     return ctrl.Load_Data(storage)
@@ -66,49 +64,34 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        fc=input("Factor de carga: ")
-        printType()
-        Inputs = input('Seleccione un tipo de manejo de colisión\n')
-        if int(Inputs[0]) == 1:
-            Datos=initialize("PROBING", float(fc))
-        if int(Inputs[0]) == 2:
-            Datos=initialize("CHAINING", float(fc))   
+        Datos=initialize()
         print("Cargando información de los archivos ....")
         Re=Load_Data(Datos)
         print("Numero de videos cargados: "+str(Re[2]))
-        #first=lt.firstElement(Datos["videos"])
-        """print("Datos del primer video cargado:\n"+
-            "Titulo: "+str(first["title"])+"\n"+
-            "Canal: "+str(first["channel_title"])+"\n"+
-            "Fecha de trending: "+str(first["trending_date"])+"\n"+
-            "Pais: "+str(first["country"])+"\n"+
-            "Vistas: "+str(first["views"])+"\n"+
-            "Likes: "+str(first["likes"])+"\n"+
-            "Dislikes: "+str(first["dislikes"])
-        )
         print("Categorias: \n"+"id "+" nombre")
         cat_keys=mp.keySet(Datos["categorias_id"])
         for i in lt.iterator(cat_keys):
             id=i
             name=mp.get(Datos["categorias_id"],id)
             name=me.getValue(name)
-            print(id+" "+name)"""
+            print(id+" "+name)
 
     elif int(inputs[0]) == 2:
         pais=input("Pais: ")
         categoria=input("Categoria: ")
         n = input("Número de videos a listar: ")
-        while int(n)>lt.size(Datos["videos"]):
+        while int(n)>Re[2]:
             print("El número de videos a listar excede la cantidad de videos cargados en la memoria")
             n = input("Número de videos a listar: ")
-        tiempo,lista=ctrl.filtrar_count_cat(Datos["videos"], Datos["categorias_id"], " "+categoria, pais) #El " " es porque cuando se leen las categorias, vienen con un espacio al inicio.
+        lista=ctrl.filtrar_count_cat(Datos["categorias"], " "+categoria, pais, int(n)) #El " " es porque cuando se leen las categorias, vienen con un espacio al inicio.
         i=1
         if lt.size(lista)==0:
             print("No hay videos que hayan sido tendencia en {} de la categoria {}".format(pais, categoria))
-        while i<=lt.size(lista) and i<=int(n):
+        while i<=lt.size(lista):
             vid=lt.getElement(lista,i)
-            print("Titulo: "+vid["title"],"trending date: "+vid["trending_date"],"Canal: "+vid["channel_title"],"Fecha de publicacion: "+vid["publish_time"],"Vistas: "+vid["views"],"Likes: "+vid["likes"],"Dislikes: "+vid["dislikes"])
+            print("\nTitulo: "+vid["title"],"trending date: "+vid["trending_date"],"Canal: "+vid["channel_title"],"Fecha de publicacion: "+vid["publish_time"],"Vistas: "+vid["views"],"Likes: "+vid["likes"],"Dislikes: "+vid["dislikes"])
             i+=1
+
     elif int(inputs[0]) == 3:
         pais=input("Pais sobre el cual consultar: ")
         try:
@@ -127,27 +110,28 @@ while True:
         pais=input("Pais sobre el cual consultar: ")
         tag=input("Tag que desea consultar: ")
         n = input("Número de videos a listar: ")
-        while int(n)>lt.size(Datos["videos"]):
+        while int(n)>Re[2]:
             print("El número de videos a listar excede la cantidad de videos cargados en la memoria")
             n = input("Número de videos a listar: ")
-        tiempo,lista=ctrl.filtrar_count_tag(Datos["videos"], pais, tag)        
+        lista=ctrl.filtrar_count_tag(Datos["Paises"], pais, tag, int(n))        
         if lt.size(lista)==0:
             print("No hay videos que hayan sido tendencia con el tag {} y en {}".format(tag, pais))
         i=1
-        while i<=lt.size(lista) and i<=int(n):
+        while i<=lt.size(lista):
             vid=lt.getElement(lista, i)
             print("\nTitulo: "+vid["title"],"Canal: "+vid["channel_title"],"Fecha de publicacion: "+vid["publish_time"],"Vistas: "+vid["views"],"Likes: "+vid["likes"],"Dislikes: "+vid["dislikes"], "Cantidad de comentarios: "+vid["comment_count"], "Tags: "+vid["tags"])
             i+=1
+
     elif int(inputs[0]) == 6:
         categoria=input("Categoria: ")
         n = input("Número de videos a listar: ")
         while int(n)>Re[2]:
             print("El número de videos a listar excede la cantidad de videos cargados en la memoria")
             n = input("Número de videos a listar: ")
-        lista=ctrl.filtrar_cat_n(Datos["categorias"]," "+categoria,int(n)) #El " " es porque cuando se leen las categorias, vienen con un espacio al inicio.
+        lista=ctrl.filtrar_cat_n(Datos["categorias"], " "+categoria, int(n)) #El " " es porque cuando se leen las categorias, vienen con un espacio al inicio.
         i=1
         if lt.size(lista)==0:
-            print("No hay videos que hayan sido tendencia en {} de la categoria {}".format(categoria))
+            print("No hay videos que hayan sido tendencia de la categoria {}".format(categoria))
         while i<=lt.size(lista):
             vid=lt.getElement(lista,i)
             print("Titulo: "+vid["title"],"trending date: "+vid["trending_date"],"Canal: "+vid["channel_title"],"Fecha de publicacion: "+vid["publish_time"],"Vistas: "+vid["views"],"Likes: "+vid["likes"],"Dislikes: "+vid["dislikes"])

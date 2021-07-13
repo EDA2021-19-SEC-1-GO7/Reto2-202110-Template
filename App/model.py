@@ -40,15 +40,15 @@ Se define la estructura de un catálogo de videos. El catálogo tendrá dos list
 los mismos.
 """
 # Construccion de modelos
-def initialize(type, lf):
+def initialize():
     Data={
         "categorias_id":None,
         "categorias":None,
         "Paises":None
     }
-    Data["categorias_id"]=mp.newMap(numelements=100, maptype=type, loadfactor=lf)#Parejas id_categoria-Nombre categoria
-    Data["categorias"]=mp.newMap(numelements=100, maptype=type, loadfactor=lf)#Videos ordenados por categoria
-    Data["Paises"]=mp.newMap(numelements=200, maptype=type, loadfactor=1)#Mapa con listas de videos por pais.
+    Data["categorias_id"]=mp.newMap(numelements=100, maptype="PROBING", loadfactor=0.5)#Parejas id_categoria-Nombre categoria
+    Data["categorias"]=mp.newMap(numelements=100, maptype="PROBING", loadfactor=0.5)#Videos ordenados por categoria
+    Data["Paises"]=mp.newMap(numelements=200, maptype="PROBING", loadfactor=0.5)#Mapa con listas de videos por pais.
 
     return Data
 # Funciones para agregar informacion al catalogo
@@ -85,22 +85,22 @@ def add_categoria_vid(video,Data):
 
 # Funciones de consulta
 
-def filtrar_cat_n(categories, categoria,n)->list:
+def filtrar_cat_n(categories, categoria, n)->list:
     """ Retorna una lista ordenada de los videos con más views de una categoría """
     videos=me.getValue(mp.get(categories, categoria))["videos"]
     vids_sorted=sort_vids_by_likes(videos)
-    list_new=lt.newList('ARRAY_LIST')
+    vids_cat=lt.newList('ARRAY_LIST')
     titulos=lt.newList('ARRAY_LIST')
     i=1
-    while lt.size(list_new)<n and i<lt.size(vids_sorted):
+    while lt.size(vids_cat)<n and i<lt.size(vids_sorted):
         tit=lt.getElement(vids_sorted,i)["title"]
         if lt.isPresent(titulos,tit):
             pass
         else:
             lt.addLast(titulos,tit)
-            lt.addLast(list_new,lt.getElement(vids_sorted,i))
+            lt.addLast(vids_cat,lt.getElement(vids_sorted,i))
         i+=1
-    return list_new
+    return vids_cat
 
 def filtrar_count_cat(categories, categoria, pais, n)->list:
     """ Retorna una lista ordenada de los videos con más likes de una categoría y 
@@ -116,30 +116,33 @@ def filtrar_count_cat(categories, categoria, pais, n)->list:
             lt.addLast(titulos,tit)
             lt.addLast(videos,lt.getElement(videos_cat,i))
         i+=1
-    vids_sorted=sort_vids_by_likes(videos)
+    vids_sorted=sort_vids_by_comments(videos)
     if lt.size(vids_sorted)>=n:
         return lt.subList(vids_sorted, 1, n)
     else:
         return vids_sorted
 
-def filtrar_count_tag(videos, pais, tag, n)->list:
+def filtrar_count_tag(paises, pais, tag, n)->list:
     """ Retorna una lista ordenada de los videos con más comentarios de un país 
     y con un tag en específico. En este caso se incluyen todos aquellos tags que 
     incluyan la palabra ingresada por el usuario como subcadena """
-    videos_count_tag=lt.newList('ARRAY_LIST')
+    videos_country= me.getValue(mp.get(paises, pais))
+    videos=lt.newList('ARRAY_LIST')
     titulos=lt.newList('ARRAY_LIST')
-    videos_sorted=sort_vids_by_comments(videos)
     i=1
-    while i<=lt.size(videos_sorted) and lt.size(videos_count_tag)<n:
-        tit=lt.getElement(videos_sorted,i)["title"]
-        country=lt.getElement(videos_sorted,i)["country"]
-        tags=lt.getElement(videos_sorted,i)["tags"]
-        if lt.isPresent(titulos,tit)==0 and (country==pais) and (tag in tags):
+    while i<=lt.size(videos_country):
+        tit=lt.getElement(videos_country,i)["title"]
+        tags=lt.getElement(videos_country, i)["tags"]
+        if lt.isPresent(titulos,tit)==0 and (tag.lower() in tags.lower()):
             lt.addLast(titulos,tit)
-            lt.addLast(videos_count_tag,lt.getElement(videos_sorted,i))
+            lt.addLast(videos,lt.getElement(videos_country,i))
         i+=1
-    return videos_count_tag
-
+    vids_sorted=sort_vids_by_likes(videos)
+    if lt.size(vids_sorted)>=n:
+        return lt.subList(vids_sorted, 1, n)
+    else:
+        return vids_sorted
+    
 
 def max_vids_count(paises:list,pais:str)->dict:
     """ Retorna una tupla que contiene 
