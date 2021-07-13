@@ -183,6 +183,7 @@ def max_vids_count(paises:list,pais:str)->dict:
         if dislikes!=0 and likes/dislikes<10:
             pass
         elif respuesta!=None and (apariciones_j>lt.getElement(registro[respuesta],1)) and j!="Deleted video":
+            respuesta=j
             if dislikes>0:
                 ratio=likes/dislikes
             else:
