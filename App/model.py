@@ -127,10 +127,10 @@ def filtrar_count_tag(paises, pais, tag, n)->list:
     y con un tag en específico. En este caso se incluyen todos aquellos tags que 
     incluyan la palabra ingresada por el usuario como subcadena """
     videos_tag=me.getValue(mp.get(paises,pais))
-    sort_vids_by_comments(videos_tag)
     videos=lt.newList('ARRAY_LIST')
     titulos=lt.newList('ARRAY_LIST')
     i=1
+    print(lt.size(videos_tag))
     while i<=lt.size(videos_tag):
         tit=lt.getElement(videos_tag,i)["title"]
         tags=lt.getElement(videos_tag, i)["tags"]
@@ -138,10 +138,12 @@ def filtrar_count_tag(paises, pais, tag, n)->list:
             lt.addLast(titulos,tit)
             lt.addLast(videos,lt.getElement(videos_tag,i))
         i+=1
-    if lt.size(videos)>=n:
-        return lt.subList(videos, 1, n)
+    print(lt.size(videos))
+    vids_sorted=sort_vids_by_comments(videos)
+    if lt.size(vids_sorted)>=n:
+        return lt.subList(vids_sorted, 1, n)
     else:
-        return videos
+        return vids_sorted
     
 
 def max_vids_count(paises:list,pais:str)->dict:
