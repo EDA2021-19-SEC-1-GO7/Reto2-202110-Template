@@ -206,6 +206,4 @@ def max_vids_cat(videos:list):
     delta_memory = deltaMemory(start_memory, stop_memory)
     print("Tiempo [ms]: ", f"{delta_time:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{delta_memory:.3f}")
-    
     return ret
-    

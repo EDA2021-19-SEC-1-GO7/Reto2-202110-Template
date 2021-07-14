@@ -130,7 +130,6 @@ def filtrar_count_tag(paises, pais, tag, n)->list:
     videos=lt.newList('ARRAY_LIST')
     titulos=lt.newList('ARRAY_LIST')
     i=1
-    print(lt.size(videos_tag))
     while i<=lt.size(videos_tag):
         tit=lt.getElement(videos_tag,i)["title"]
         tags=lt.getElement(videos_tag, i)["tags"]
@@ -138,7 +137,6 @@ def filtrar_count_tag(paises, pais, tag, n)->list:
             lt.addLast(titulos,tit)
             lt.addLast(videos,lt.getElement(videos_tag,i))
         i+=1
-    print(lt.size(videos))
     vids_sorted=sort_vids_by_comments(videos)
     if lt.size(vids_sorted)>=n:
         return lt.subList(vids_sorted, 1, n)
@@ -154,7 +152,6 @@ def max_vids_count(paises:list,pais:str)->dict:
             El numero de días que el video fue tendencia
             El país en donde el video fue tendencia"""
     videos=me.getValue(mp.get(paises,pais))
-    #print(videos)
     registro={}#Diccionario de listas vacio, tendra como llave los titulos de los videos; en las listas se anotaran los valores solicitados por el usuario.
     for i in lt.iterator(videos):#Recorrer cada video de la lista principal.
         titulo=i["title"]
