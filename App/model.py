@@ -106,7 +106,7 @@ def filtrar_count_cat(categories, categoria, pais, n)->list:
     """ Retorna una lista ordenada de los videos con más likes de una categoría y 
     un país en específico """
     videos_cat=me.getValue(mp.get(categories,categoria))["videos"]
-    vids_sorted=sort_vids_by_likes(videos_cat)
+    sort_vids_by_likes(videos_cat)
     videos=lt.newList('ARRAY_LIST')
     titulos=lt.newList('ARRAY_LIST')
     i=1
@@ -117,32 +117,31 @@ def filtrar_count_cat(categories, categoria, pais, n)->list:
             lt.addLast(titulos,tit)
             lt.addLast(videos,lt.getElement(videos_cat,i))
         i+=1
-    print(titulos)
-    if lt.size(vids_sorted)>=n:
-        return lt.subList(vids_sorted, 1, n)
+    if lt.size(videos)>=n:
+        return lt.subList(videos, 1, n)
     else:
-        return vids_sorted
+        return videos
 
 def filtrar_count_tag(paises, pais, tag, n)->list:
     """ Retorna una lista ordenada de los videos con más comentarios de un país 
     y con un tag en específico. En este caso se incluyen todos aquellos tags que 
     incluyan la palabra ingresada por el usuario como subcadena """
-    videos_country= me.getValue(mp.get(paises, pais))
+    videos_tag=me.getValue(mp.get(paises,pais))
+    sort_vids_by_comments(videos_tag)
     videos=lt.newList('ARRAY_LIST')
     titulos=lt.newList('ARRAY_LIST')
     i=1
-    while i<=lt.size(videos_country):
-        tit=lt.getElement(videos_country,i)["title"]
-        tags=lt.getElement(videos_country, i)["tags"]
-        if lt.isPresent(titulos,tit)==0 and (tag.lower() in tags.lower()):
+    while i<=lt.size(videos_tag):
+        tit=lt.getElement(videos_tag,i)["title"]
+        tags=lt.getElement(videos_tag, i)["tags"]
+        if not(lt.isPresent(titulos,tit)) and tag.lower() in tags.lower():
             lt.addLast(titulos,tit)
-            lt.addLast(videos,lt.getElement(videos_country,i))
+            lt.addLast(videos,lt.getElement(videos_tag,i))
         i+=1
-    vids_sorted=sort_vids_by_likes(videos)
-    if lt.size(vids_sorted)>=n:
-        return lt.subList(vids_sorted, 1, n)
+    if lt.size(videos)>=n:
+        return lt.subList(videos, 1, n)
     else:
-        return vids_sorted
+        return videos
     
 
 def max_vids_count(paises:list,pais:str)->dict:
