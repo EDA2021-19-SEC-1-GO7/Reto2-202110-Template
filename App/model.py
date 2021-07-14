@@ -46,9 +46,9 @@ def initialize():
         "categorias":None,
         "Paises":None
     }
-    Data["categorias_id"]=mp.newMap(numelements=100, maptype="PROBING", loadfactor=0.5)#Parejas id_categoria-Nombre categoria
-    Data["categorias"]=mp.newMap(numelements=100, maptype="PROBING", loadfactor=0.5)#Videos ordenados por categoria
-    Data["Paises"]=mp.newMap(numelements=200, maptype="PROBING", loadfactor=0.5)#Mapa con listas de videos por pais.
+    Data["categorias_id"]=mp.newMap(numelements=100, maptype="PROBING", loadfactor=0.8)#Parejas id_categoria-Nombre categoria
+    Data["categorias"]=mp.newMap(numelements=100, maptype="PROBING", loadfactor=0.8)#Videos ordenados por categoria
+    Data["Paises"]=mp.newMap(numelements=200, maptype="PROBING", loadfactor=0.8)#Mapa con listas de videos por pais.
 
     return Data
 # Funciones para agregar informacion al catalogo
@@ -106,17 +106,18 @@ def filtrar_count_cat(categories, categoria, pais, n)->list:
     """ Retorna una lista ordenada de los videos con más likes de una categoría y 
     un país en específico """
     videos_cat=me.getValue(mp.get(categories,categoria))["videos"]
+    vids_sorted=sort_vids_by_likes(videos_cat)
     videos=lt.newList('ARRAY_LIST')
     titulos=lt.newList('ARRAY_LIST')
     i=1
     while i<=lt.size(videos_cat):
         tit=lt.getElement(videos_cat,i)["title"]
         country=lt.getElement(videos_cat, i)["country"]
-        if lt.isPresent(titulos,tit)==0 and country==pais:
+        if not(lt.isPresent(titulos,tit)) and country==pais:
             lt.addLast(titulos,tit)
             lt.addLast(videos,lt.getElement(videos_cat,i))
         i+=1
-    vids_sorted=sort_vids_by_comments(videos)
+    print(titulos)
     if lt.size(vids_sorted)>=n:
         return lt.subList(vids_sorted, 1, n)
     else:
